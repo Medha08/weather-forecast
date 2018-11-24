@@ -1,0 +1,244 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="weather.css">
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+</head>
+
+<body>
+    <div class="main">
+        <div class="container">
+            <div class="app twelve columns">
+                <h1 class="headline">Weather Forecast
+                    <span class="location"></span>
+                </h1>
+                <% var place %>
+                    <% var temp %>
+                        <% var anim %>
+                            <% var weathId  %>
+                                <div class="row">
+                                    <div class="search-weather eight columns offset-by-two">
+                                        <h3>Find a Forecast</h3>
+                                        <form id="my-form" action="/temp">
+
+                                            <input type="search" placeholder="Search for location" class="find-forcast" name="loc" id="locate">
+
+                                            <button class="btn-search" style="display:inline-block">Search</button>
+
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="eight columns offset-by-two">
+                                        <div class="weather-info">
+                                            <div class="weather-info-animation">
+                                                <span style="display:none">
+                                                    <%= weathId ? weathId : 0; %>
+                                                </span>
+                                                <%if (weathId == 800) { %>
+                                                    <img src="clear_f.svg" alt="Atmosphere" width="220" height="220">
+                                                    <% } else{ %>
+                                                        <%  weathId = Math.round((weathId-50)/100) %>
+                                                            <% switch (weathId) {
+                                                            case  7  : %>
+                                                                             <img src="atmos_f.svg" alt="Atmosphere" width="220" height="220">
+                                                                             <% break;
+
+                                                            case  2 : %>
+                                                                            <img src="thunder_f.svg" alt="Atmosphere" width="220" height="220">
+                                                                            <% break;
+                                                            
+                                                            case 3 : %>
+                                                                            <img src="drizzle_f.svg" alt="Atmosphere" width="220" height="220">
+                                                                            <% break;
+                                                            case 5 : %>
+                                                                            <img src="rainy_f.svg" alt="Atmosphere" width="220" height="220">
+                                                                            <% break;
+                                                            case 6 : %>
+                                                                            <img src="snow_f.svg" alt="Atmosphere" width="220" height="220">
+                                                                            <% break;
+                                                            case 8 : %>
+                                                                            <img src="cloud_f.svg" alt="Atmosphere" width="220" height="220">
+                                                                            <% break;
+                                                            default : %>
+                                                                            <img src="weather_f.svg" alt="Atmosphere" width="220" height="220">
+                                                                            <% break;
+                                                            } %>
+
+                                                                                            <% } %>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="eight columns offset-by-two">
+                                            <div class="weather-info-text">
+                                                <div class="column">
+                                                    <span>
+                                                        <%= place ? place : 'Talking about ICE'; %>
+                                                    </span>
+                                                    <span>
+                                                        <%= anim ? anim : ' '; %>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="eight columns offset-by-two">
+                                            <div class="weather-info-text">
+                                                <div class="column">
+                                                    <div class="temperature">
+                                                        <span class="temp" id="temp">
+                                                            <%= temp ? temp : '0'; %>
+                                                        </span>
+                                                        <span class="temp-fahrenheit" onclick="convertTemp(this.id)" id="fahrenheit">°F</span>
+                                                        <span class="temp-celcius" onclick="convertTemp(this.id)" id="celcius">°C</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <!-- app -->
+            </div>
+            <!-- container -->
+        </div>
+        <!-- main -->
+        <script>
+               
+            $('my-form').submit(function (event) {
+                var post_url = $(this).attr("action");
+                $.ajax({
+                    type: "POST",
+                    url: post_url,
+                    success: function () {
+                    }
+                });
+                return false;
+                event.preventDefault();
+            });
+
+
+
+            function convertTemp(temp_id) {
+                var temp = Number(document.getElementById("temp").innerHTML.trim().toString());
+                if (temp_id == "fahrenheit") {
+
+                    document.getElementById("temp").innerHTML = ((temp - 32) * 9 / 5).toFixed(2)
+                    var meTempC = document.getElementById('celcius');
+                    var meTempF = document.getElementById('fahrenheit');
+                    meTempF.style.display = 'none';
+                    meTempC.style.display = 'inline-block';
+
+                }
+                else if (temp_id == "celcius") {
+
+                    document.getElementById("temp").innerHTML = ((temp * 5 / 9) + 32).toFixed(2)
+                    var meTempC = document.getElementById('celcius');
+                    var meTempF = document.getElementById('fahrenheit');
+                    meTempC.style.display = 'none';
+                    meTempF.style.display = 'inline-block';
+
+                }
+
+            }
+            var geocoder = new google.maps.Geocoder();
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(successFunction, errorFunction);
+            }
+            //Get the latitude and the longitude;
+            function successFunction(position) {
+                var lat = position.coords.latitude;
+                var lng = position.coords.longitude;
+                codeLatLng(lat, lng)
+            }
+
+            function errorFunction() {
+                alert("Geocoder failed");
+            }
+
+
+            function codeLatLng(lat, lng) {
+
+                var latlng = new google.maps.LatLng(lat, lng);
+                geocoder.geocode({ 'latLng': latlng }, function (results, status) {
+                    if (status == google.maps.GeocoderStatus.OK) {
+                        console.log(results)
+                        if (results[1]) {
+                            //formatted address
+                            //alert(results[0].formatted_address)
+                            //find country name
+                            for (var i = 0; i < results[0].address_components.length; i++) {
+                                for (var b = 0; b < results[0].address_components[i].types.length; b++) {
+
+                                    //there are different types that might hold a city admin_area_lvl_1 usually does in come cases looking for sublocality type will be more appropriate
+                                    if (results[0].address_components[i].types[b] == "locality") {
+                                        //this is the object you are looking for
+                                        city = results[0].address_components[i];
+                                        break;
+                                    }
+                                }
+                            }
+
+                            // $("#element").click(function () {
+                            //     var $this = $(this);
+                            //     if ($this.data('clicked')) {
+                            //         func(some, other, parameters);
+                            //     }
+                            //     else {
+                            //         $this.data('clicked', true);
+                            //         func(some, parameter);
+                            //     }
+                            // });
+
+
+                            if (firstTime != 1  && window.location.href == "http://localhost:3000/") {
+                                // first time loaded!
+                               
+                                var firstTime = localStorage.getItem("first_time");
+                                document.getElementById("locate").value = city.short_name;
+                                localStorage.setItem("first_time", "1");
+                                
+                            }
+                           
+                             else if (firstTime == 1 ){
+                                document.getElementById("locate").value = "";
+                                document.getElementById("locate").setAttribute("placeholder","Search for location") 
+                            }
+                            
+                        } else {
+                            alert("No results found");
+                        }
+                    } else {
+                        alert("Geocoder failed due to: " + status);
+                    }
+                });
+                return false
+            }
+
+            // return false
+
+            navigator.permissions.query({ name: 'geolocation' })
+                .then(function (permissionStatus) {
+
+                    if (permissionStatus.state == "denied") {
+                        document.getElementById("locate").value = " "
+                    }
+                    else if (permissionStatus.state == "default") {
+                        document.getElementById("locate").value = " "
+                    }
+                    permissionStatus.onchange = function() {
+                        window.location.href = "http://localhost:3000/";
+                    };
+                })
+
+
+        </script>
+</body>
+
+</html>
