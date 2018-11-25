@@ -197,7 +197,7 @@
                             // });
 
 
-                            if (firstTime != 1  && window.location.href == "http://localhost:3000/") {
+                            if (firstTime != 1  && window.location.href == "https://weather8forecast.herokuapp.com/") {
                                 // first time loaded!
                                
                                 var firstTime = localStorage.getItem("first_time");
@@ -233,7 +233,7 @@
                         document.getElementById("locate").value = " "
                     }
                     permissionStatus.onchange = function() {
-                        window.location.href = "http://localhost:3000/";
+                        window.location.href = "https://weather8forecast.herokuapp.com/";
                     };
                 })
 
