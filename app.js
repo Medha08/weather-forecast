@@ -15,6 +15,9 @@ app.set('views',__dirname+"/views")
 app.use('/',routes)
 
 
-app.listen(8080,(err)=>{
-    console.log("Check port 8080")
-})
+app.set( 'port', ( process.env.PORT || 5000 ));
+
+// Start node server
+app.listen( app.get( 'port' ), function() {
+  console.log( 'Node server is running on port ' + app.get( 'port' ));
+  });
