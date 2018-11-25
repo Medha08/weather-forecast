@@ -15,6 +15,6 @@ app.set('views',__dirname+"/views")
 app.use('/',routes)
 
 
-app.listen(3000,(err)=>{
-    console.log("Check port 3000")
+app.listen(8080,(err)=>{
+    console.log("Check port 8080")
 })
